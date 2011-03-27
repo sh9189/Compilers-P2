@@ -1,0 +1,6 @@
+CS502=/homes/cs502
+JAVACC=$CS502/javacc; export JAVACC
+PATH=$JAVACC/bin:$CS502/bin:$PATH; export PATH
+MANPATH=$CS502/man:$MANPATH; export MANPATH
+CLASSPATH=.:../bin:../lib; export CLASSPATH
+LD_LIBRARY_PATH=$CS502/lib; export LD_LIBRARY_PATH
