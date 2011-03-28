@@ -511,6 +511,8 @@ abstract class QualifyExpr {
                     return;
                 if ((e.value = Type.Object.LookUp(t, e.name)) != null)
                     return;
+                if ((e.value = Type.Record.LookUp(t, e.name)) != null)
+                    return;
             } else if ((e.value = NamedExpr.Split(e.expr)) != null) {
                 Value.Module m = Value.Module.Is(e.value);
                 if (m != null) {
@@ -520,6 +522,8 @@ abstract class QualifyExpr {
             }
         } else {
             if ((e.value = Type.Object.LookUp(t, e.name)) != null)
+                return;
+            if ((e.value = Type.Record.LookUp(t, e.name)) != null)
                 return;
         }
         Semant.error(e, "unknown qualification(" + e.name + ")");

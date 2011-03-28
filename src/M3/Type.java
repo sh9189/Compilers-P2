@@ -52,7 +52,19 @@ abstract class Type {
                 }
                 return type;
             }
-
+            public Type visit(Absyn.Type.Record t) {
+                Type parent = Parse(t.parent);
+                if (parent == null) parent = Type.ROOT;
+                Type.Record type = new Type.Record(t, parent);
+                {
+                    Scope zz = Scope.Push(type.fields);
+                    for (Absyn.Decl.Field f : t.fields)
+                        Scope.Insert(new Value.Field(f, Parse(f.type)));
+                    Scope.Pop(zz);
+                }
+                
+                return type;
+            }
             @Override
             public Type visit(Absyn.Type.Proc t) {
                 Type result = Parse(t.result);
@@ -618,6 +630,130 @@ abstract class Type {
             for (Value o : Scope.ToList(methods)) {
                 Value.Method m = Value.Method.Is(o);
                 s += String.format(m + "%n");
+                ++i;
+            }
+            s += String.format("END");
+            return s;
+        }
+    }
+    static class Record extends Type {
+        @Override
+        <R> R accept(Visitor<R> v) { return v.visit(this); }
+
+        Type parent;
+        final Scope fields = Scope.NewClosed();
+        int fieldOffset = 0, fieldSize = 0;
+        
+
+        Record(Absyn.Type.Record ast, Type parent) {
+            super(ast);
+            this.parent = parent;
+        }
+
+        /**
+         * Test if a type is an object type
+         * @param t the type to test
+         * @return the object type or null 
+         */
+        static Record Is(Type t) {
+            if (t instanceof Record)
+                return (Record) t;
+            return null;
+        }
+
+        /**
+         * Look up a field or method of an object type
+         * @param t the type in which to look up the field or method
+         * @param key the name of the field or method
+         * @return the field or method denoted by the key, or null
+         */
+        static Value LookUp(Type t, String key) {
+            for (;;) {
+                t = Check(t);
+                if (t == ERROR)
+                    return null;
+                Record p = Is(t);
+                if (p == null)
+                    return null;
+                {
+                    Value v = Scope.LookUp(p.fields, key, true);
+                    Value.Field f = Value.Field.Is(v);
+                    if (f != null)
+                        return f;
+                }
+                t = p.parent;
+            }
+        }
+
+        @Override
+        void check() {
+            fieldOffset = 0;
+            if (parent != null) {
+                parent = Check(parent);
+                Record sup = Is(parent);
+                if (sup != null) {
+                    if (parent == this) {
+                        Semant.error(ast, "illegal recursive supertype");
+                        parent = null;
+                    } else {
+                        fieldOffset = sup.fieldOffset + sup.fieldSize;
+                        
+                    }
+                } else {
+                    Semant.error(ast, "super type must be an object type");
+                    parent = null;
+                }
+            }
+            for (Value o : Scope.ToList(fields)) {
+                Value.Field field = Value.Field.Is(o);
+                field.offset = fieldOffset + fieldSize++;
+             }
+            recursionDepth++;
+            {
+                checked = true;
+                Scope.TypeCheck(fields);
+                
+            }
+            recursionDepth--;
+        }
+
+        @Override
+        boolean isEqual(Type t, Assumption x) {
+            Record a = this;
+            Record b = (Record) t;
+
+            // check the field names and offsets
+            if (!Value.Field.IsEqual(a.fields, b.fields, x, false))
+                return false;
+
+            
+            // check the super types
+            if (!IsEqual(a.parent, b.parent, x))
+                return false;
+
+            // check the field types
+            if (!Value.Field.IsEqual(a.fields, b.fields, x, true))
+                return false;
+
+            
+            return true;
+        }
+
+        @Override
+        boolean isSubtype(Type t) {
+            if (IsEqual(t, ROOT))
+                return true;
+            return IsEqual(this, t) || IsSubtype(parent, t);
+        }
+
+        @Override
+        public String toString() {
+            int i;
+            String s = String.format("%nRECORD%n");
+            i = 0;
+            for (Value o : Scope.ToList(fields)) {
+                Value.Field f = Value.Field.Is(o);
+                s += String.format(f + "%n");
                 ++i;
             }
             s += String.format("END");

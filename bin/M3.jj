@@ -575,7 +575,10 @@ Absyn.Type Type () :
   ( type = NamedType() [ type = ObjectType(type) ]
   | type = ArrayType()
   | type = ObjectType(null)
-  | type = RefType())
+  | type = RefType()
+  | type = RecordType(null)
+)
+  
   { return type; }
 }
 
@@ -605,6 +608,19 @@ Absyn.Type ObjectType (Absyn.Type type) :
     ["OVERRIDES" Overrides(o)]
     "END"
     { type = new Absyn.Type.Object(t, type, fields, m, o); } )+
+  { return type; }
+}
+Absyn.Type RecordType (Absyn.Type type) :
+{
+  Token t;
+  LinkedList<Absyn.Decl.Field> fields;
+  
+}
+{
+  ( { fields = new LinkedList<Absyn.Decl.Field>(); }
+    t = "RECORD" Fields(fields)
+    "END"
+    { type = new Absyn.Type.Record(t,fields); } )
   { return type; }
 }
 

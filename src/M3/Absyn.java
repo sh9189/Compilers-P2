@@ -208,6 +208,7 @@ public abstract class Absyn {
             R visit(Object t);
             R visit(Proc t);
             R visit(Ref t);
+			R visit(Record t);
         }
         abstract <R> R accept(Visitor<R> v);
 
@@ -256,6 +257,18 @@ public abstract class Absyn {
 		this.methods = methods;
 		this.overrides = overrides;
 	    }
+	    <R> R accept(Visitor<R> v) { return v.visit(this); }
+	}
+	public static class Record extends Type {
+	    public final Type parent;
+	    public final List<Decl.Field> fields;
+	    
+	    public Record (Token t, Type parent,
+			   List<Decl.Field> fields) {
+		super(t);
+		this.parent = parent;
+		this.fields = fields;
+		}
 	    <R> R accept(Visitor<R> v) { return v.visit(this); }
 	}
 	/**
@@ -1014,6 +1027,19 @@ public abstract class Absyn {
 	    indent(i); say("END");
             return null;
 	}
+        public Void visit(Type.Record t) {
+    	    if (t.parent != null) {
+    	        print(t.parent, i);
+    		say(" ");
+    	    }
+    	    sayln(t.token);
+    	    for (Decl.Field field: t.fields) {
+    		print(field, i+2);
+    	    }
+    	    
+    	    indent(i); say("END");
+                return null;
+    	}
         @Override
 	public Void visit(Type.Ref t) {
 	    say(t.token); say(" ");
