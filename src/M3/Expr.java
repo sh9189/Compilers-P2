@@ -441,7 +441,7 @@ abstract class NamedExpr {
         e.value = Scope.LookUp(e.scope, e.name, false);
         if (e.value == null) {
             Semant.error(e, "undefined", e.name);
-            e.value = new Value.Variable((Absyn.Decl.Variable)null, Type.ERROR);
+            e.value = new Value.Variable(e.name, Type.ERROR);
         }
     }
 
@@ -502,7 +502,7 @@ abstract class QualifyExpr {
             t = Expr.TypeCheck(e.expr);
         }
         if (t == Type.ERROR) {
-            e.value = new Value.Variable((Absyn.Decl.Variable)null, Type.ERROR);
+            e.value = new Value.Variable(e.name, Type.ERROR);
             return;
         } else if (t == null) {
             // a module or type
@@ -527,7 +527,7 @@ abstract class QualifyExpr {
                 return;
         }
         Semant.error(e, "unknown qualification(" + e.name + ")");
-        e.value = new Value.Variable((Absyn.Decl.Variable)null, Type.ERROR);
+        e.value = new Value.Variable(e.name, Type.ERROR);
     }
 
     /**

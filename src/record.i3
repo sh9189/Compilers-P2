@@ -1,7 +1,7 @@
-INTERFACE test;
+INTERFACE record;
 
 <*EXTERNAL*>
 (* PROCEDURE putchar(c: CHAR); *)
 PROCEDURE putchar(i: INTEGER);
 
-END test.
+END record.

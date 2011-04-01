@@ -1,0 +1,124 @@
+	.data
+	.align 2
+record.bar:
+	.word 0
+	.text
+record.foo:
+EXP(
+ CALL(
+  NAME _putchar,
+  CONST 0,
+  ADD(
+   ADD(
+    ESEQ(
+     MOVE(
+      TEMP t.1,
+      MEM(
+       ESEQ(
+        MOVE(
+         TEMP t.0,
+         TEMP record.foo.o),
+        BEQ(
+         TEMP t.0,
+         CONST 0,
+         _BADPTR, L.1),
+        LABEL L.1,
+        TEMP t.0), 0)),
+     BEQ(
+      TEMP t.1,
+      CONST 0,
+      _BADPTR, L.2),
+     LABEL L.2,
+     MEM(
+      TEMP t.1, 0)),
+    ESEQ(
+     MOVE(
+      TEMP t.3,
+      MEM(
+       ESEQ(
+        MOVE(
+         TEMP t.2,
+         TEMP record.foo.o),
+        BEQ(
+         TEMP t.2,
+         CONST 0,
+         _BADPTR, L.3),
+        LABEL L.3,
+        TEMP t.2), 0)),
+     BEQ(
+      TEMP t.3,
+      CONST 0,
+      _BADPTR, L.4),
+     LABEL L.4,
+     MEM(
+      TEMP t.3, 4))),
+   CONST 48))),
+LABEL L.0
+
+
+	.text
+record_M3:
+MOVE(
+ MEM(
+  NAME record.bar, 0),
+ CALL(
+  NAME new,
+  CONST 0,
+  CONST 8,
+  CONST 1)),
+MOVE(
+ ESEQ(
+  MOVE(
+   TEMP t.5,
+   MEM(
+    ESEQ(
+     MOVE(
+      TEMP t.4,
+      MEM(
+       NAME record.bar, 0)),
+     BEQ(
+      TEMP t.4,
+      CONST 0,
+      _BADPTR, L.5),
+     LABEL L.5,
+     TEMP t.4), 0)),
+  BEQ(
+   TEMP t.5,
+   CONST 0,
+   _BADPTR, L.6),
+  LABEL L.6,
+  MEM(
+   TEMP t.5, 0)),
+ CONST 4),
+MOVE(
+ ESEQ(
+  MOVE(
+   TEMP t.7,
+   MEM(
+    ESEQ(
+     MOVE(
+      TEMP t.6,
+      MEM(
+       NAME record.bar, 0)),
+     BEQ(
+      TEMP t.6,
+      CONST 0,
+      _BADPTR, L.7),
+     LABEL L.7,
+     TEMP t.6), 0)),
+  BEQ(
+   TEMP t.7,
+   CONST 0,
+   _BADPTR, L.8),
+  LABEL L.8,
+  MEM(
+   TEMP t.7, 4)),
+ CONST 5),
+EXP(
+ CALL(
+  NAME record.foo,
+  CONST 0,
+  MEM(
+   NAME record.bar, 0)))
+
+

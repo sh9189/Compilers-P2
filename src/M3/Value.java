@@ -984,6 +984,17 @@ abstract class Value {
             this.proc = ProcBody.current;
             flags.add(Value.Flags.isDesignator);
         }
+        Variable(String name, Type type) {
+            super(name);
+            this.decl = null;
+            this.type = type;
+            this.expr = null;
+            this.indirect = false;
+            this.formal = null;
+            this.initDone = true;
+            this.proc = ProcBody.current;
+            flags.add(Value.Flags.isDesignator);
+        }
 
         boolean initDone = false;
         boolean initPending = false;

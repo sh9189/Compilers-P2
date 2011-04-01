@@ -11,6 +11,7 @@ abstract class Type {
         R visit(Enum t);
         R visit(Named t);
         R visit(Object t);
+        R visit(Record t);
         R visit(OpenArray t);
         R visit(Proc t);
         R visit(Ref t);
@@ -700,7 +701,7 @@ abstract class Type {
                         
                     }
                 } else {
-                    Semant.error(ast, "super type must be an object type");
+                    //Semant.error(ast, "super type must be an object type");
                     parent = null;
                 }
             }

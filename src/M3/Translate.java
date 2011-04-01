@@ -625,6 +625,7 @@ class Translate {
             public Tree.Stm visit(Type.Ref t) { return MOVE(lvalue, CONST(0)); }
             public Tree.Stm visit(Type.Proc t) { return MOVE(lvalue, CONST(0)); }
             public Tree.Stm visit(Type.Object t) { return MOVE(lvalue, CONST(0)); }
+            public Tree.Stm visit(Type.Record t) { return MOVE(lvalue, CONST(0)); }
             public Tree.Stm visit(Type.OpenArray t) {
                 assert false;
                 return null;
@@ -703,6 +704,18 @@ class Translate {
                 GenMethodList(t, defaults);
                 String vtable = target.vtable(Temp.getLabel(Type.GlobalUID(t)), defaults);
                 frags.add(new Frag.Data(vtable));
+                return null;
+            }
+            public Void visit(Type.Record t) {
+                //Compile(t.parent);
+                for (Value v : Scope.ToList(t.fields)) {
+                    Value.Field f = Value.Field.Is(v);
+                    Compile(Value.TypeOf(f));
+                }
+                /*Vector<Temp.Label> defaults = new Vector<Temp.Label>(t.methodOffset + t.methodSize);
+                GenMethodList(t, defaults);
+                String vtable = target.vtable(Temp.getLabel(Type.GlobalUID(t)), null);
+                frags.add(new Frag.Data(vtable));*/
                 return null;
             }
             void GenMethodList(Type.Object t, Vector<Temp.Label> defaults) {
@@ -1059,6 +1072,14 @@ class Translate {
                                     CALL(NAME(Temp.getLabel("new")),
                                             Exps(MUL(TEMP(size), CONST(target.wordSize())), TEMP(size)))));
                         }
+                        if (Type.Record.Is(r) != null) {
+                        	Type.Record record=Type.Record.Is(r);
+                        	int size = record.fieldSize * target.wordSize();
+                            //Label vtable = Temp.getLabel(Type.GlobalUID(t));
+                            //assert vtable != null;
+                            return new Exp.Ex(CALL(NAME(Temp.getLabel("new")), Exps(CONST(size), CONST(1))));
+                        	
+                        }
                         // simple scalar
                         return new Exp.Ex(CALL(NAME(Temp.getLabel("new")), Exps(CONST(target.wordSize()), CONST(1))));
                     }
@@ -1273,6 +1294,24 @@ class Translate {
                         }
                         return new Exp.Ex(ESEQ(SEQ(MOVE(TEMP(temp), exp), nullCheck), MEM(TEMP(temp), f.offset * target.wordSize())));
                     }
+                }
+                if (Type.Record.Is(t) != null) {
+                    /*Value.Method m;
+                    if ((m = Value.Method.Is(v)) != null) {
+                        Tree.Exp exp = Compile(e.expr).unEx();
+                        Temp temp = new Temp();
+                        temps.put(e, temp);
+                        return new Exp.Ex(ESEQ(MOVE(TEMP(temp), exp), MEM(MEM(TEMP(temp), -target.wordSize()), m.offset * target.wordSize())));
+                    }*/
+                    Value.Field f;
+                    if ((f = Value.Field.Is(v)) != null) {
+                        Tree.Exp exp = Compile(e.expr).unEx();
+                        Tree.Exp.MEM mem= (Tree.Exp.MEM)exp;
+                        exp= ADD(mem.exp,CONST(mem.offset.value+f.offset*target.wordSize()));	
+                        return new Exp.Ex(MEM(exp));
+                	}
+                	
+                	
                 }
                 assert v != null;
                 return new Exp.Ex(Load(v));
