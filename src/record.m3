@@ -3,9 +3,9 @@ TYPE Foo = RECORD
   a:INTEGER;
   b:Foo;
 END;
-Type T = RECORD
+TYPE T = RECORD
     val: INTEGER;
-     next: T;
+    next: T;
 END;
 
 

@@ -620,7 +620,7 @@ Absyn.Type RecordType (Absyn.Type type) :
   ( { fields = new LinkedList<Absyn.Decl.Field>(); }
     t = "RECORD" Fields(fields)
     "END"
-    { type = new Absyn.Type.Record(t,fields); } )
+    { type = new Absyn.Type.Record(t,type,fields); } )
   { return type; }
 }
 

@@ -1,15 +1,15 @@
 MODULE test;
-TYPE Foo = OBJECT
+TYPE Obj = OBJECT
   a:INTEGER;
   b:INTEGER;
 END;
 
-PROCEDURE foo(o:Foo) =
+PROCEDURE foo(o:Obj) =
   BEGIN
     putchar(o.a + o.b + 48);
   END foo;
 
-VAR bar := NEW(Foo);
+VAR bar := NEW(Obj);
 BEGIN
   bar.a := 4;
   bar.b := 5;

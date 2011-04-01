@@ -843,7 +843,7 @@ public class Parser implements ParserConstants {
     t = jj_consume_token(61);
     Fields(fields);
     jj_consume_token(26);
-      type = new Absyn.Type.Record(t, type, fields);
+      type = new Absyn.Type.Record(t,type,fields);
     {if (true) return type;}
     throw new Error("Missing return statement in function");
   }

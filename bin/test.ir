@@ -1,0 +1,90 @@
+	.data
+	.align 2
+ROOT:
+	.data
+	.align 2
+test.Obj:
+	.data
+	.align 2
+test.bar:
+	.word 0
+	.text
+test.foo:
+EXP(
+ CALL(
+  NAME _putchar,
+  CONST 0,
+  ADD(
+   ADD(
+    ESEQ(
+     MOVE(
+      TEMP t.0,
+      TEMP test.foo.o),
+     BEQ(
+      TEMP t.0,
+      CONST 0,
+      _BADPTR, L.1),
+     LABEL L.1,
+     MEM(
+      TEMP t.0, 0)),
+    ESEQ(
+     MOVE(
+      TEMP t.1,
+      TEMP test.foo.o),
+     BEQ(
+      TEMP t.1,
+      CONST 0,
+      _BADPTR, L.2),
+     LABEL L.2,
+     MEM(
+      TEMP t.1, 4))),
+   CONST 48))),
+LABEL L.0
+
+
+	.text
+test_M3:
+MOVE(
+ MEM(
+  NAME test.bar, 0),
+ CALL(
+  NAME new,
+  CONST 0,
+  CONST 8,
+  NAME test.Obj)),
+MOVE(
+ ESEQ(
+  MOVE(
+   TEMP t.2,
+   MEM(
+    NAME test.bar, 0)),
+  BEQ(
+   TEMP t.2,
+   CONST 0,
+   _BADPTR, L.3),
+  LABEL L.3,
+  MEM(
+   TEMP t.2, 0)),
+ CONST 4),
+MOVE(
+ ESEQ(
+  MOVE(
+   TEMP t.3,
+   MEM(
+    NAME test.bar, 0)),
+  BEQ(
+   TEMP t.3,
+   CONST 0,
+   _BADPTR, L.4),
+  LABEL L.4,
+  MEM(
+   TEMP t.3, 4)),
+ CONST 5),
+EXP(
+ CALL(
+  NAME test.foo,
+  CONST 0,
+  MEM(
+   NAME test.bar, 0)))
+
+
