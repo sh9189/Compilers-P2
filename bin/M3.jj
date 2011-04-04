@@ -801,7 +801,7 @@ Absyn.Expr E8 () :
   Absyn.Type type;
 }
 {
-  t = <ID>     { return new Absyn.Expr.Named(t); }
+  t = <ID>     { System.out.println("e8"+t.image);return new Absyn.Expr.Named(t); }
 | t = <NUMBER> { return new Absyn.Expr.Number(t); }
 | t = <CHAR>   { return new Absyn.Expr.Char(t); }
 | t = <TEXT>   { return new Absyn.Expr.Text(t); }
@@ -820,7 +820,7 @@ Absyn.Expr Selector (Absyn.Expr expr) :
   t = "^"
   { return new Absyn.Expr.Deref(t, expr); }
 | t = "." id = <ID>
-  { return new Absyn.Expr.Qualify(t, expr, id); }
+  { System.out.println(id.image);return new Absyn.Expr.Qualify(t, expr, id); }
 | t = "[" index = E0() "]"
   { return new Absyn.Expr.Subscript(t, expr, index); }
 | t = "(" { actuals = new LinkedList<Absyn.Expr>(); }

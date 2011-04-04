@@ -1287,7 +1287,7 @@ public class Parser implements ParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
       t = jj_consume_token(ID);
-                 {if (true) return new Absyn.Expr.Named(t);}
+                 System.out.println("e8"+t.image);{if (true) return new Absyn.Expr.Named(t);}
       break;
     case NUMBER:
       t = jj_consume_token(NUMBER);
@@ -1329,7 +1329,7 @@ public class Parser implements ParserConstants {
     case 93:
       t = jj_consume_token(93);
       id = jj_consume_token(ID);
-    {if (true) return new Absyn.Expr.Qualify(t, expr, id);}
+    System.out.println(id.image);{if (true) return new Absyn.Expr.Qualify(t, expr, id);}
       break;
     case 91:
       t = jj_consume_token(91);

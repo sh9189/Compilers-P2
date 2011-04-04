@@ -1,12 +1,16 @@
 	.data
 	.align 2
-record.bar:
+record.a:
+	.word 0
+	.data
+	.align 2
+record.b:
 	.word 0
 	.text
-record.foo:
-record.foo.framesize=20
+record.print:
+record.print.framesize=20
 	sw $ra -4($sp)
-	subu $sp record.foo.framesize
+	subu $sp record.print.framesize
 #	move $a0 $a0
 L.7:
 	move $t0 $a0
@@ -24,7 +28,7 @@ L.2:
 	jal _putchar
 L.0:
 #	returnSink
-	addu $sp record.foo.framesize
+	addu $sp record.print.framesize
 	lw $ra -4($sp)
 	jr $ra
 	.text
@@ -39,23 +43,35 @@ L.8:
 #	move $a1 $a1
 	jal new
 #	move $v0 $v0
-	sw $v0 record.bar+0
-	lw $t0 record.bar+0
+	sw $v0 record.a+0
+	li $a0 8
+#	move $a0 $a0
+	li $a1 1
+#	move $a1 $a1
+	jal new
+#	move $v0 $v0
+	sw $v0 record.b+0
+	lw $t0 record.b+0
 #	move $t0 $t0
 	beq $t0 0 _BADPTR
 L.3:
-	li $t1 5
+	li $t1 1
 	sw $t1 0($t0)
-	lw $t0 record.bar+0
+	lw $t0 record.b+0
 #	move $t0 $t0
 	beq $t0 0 _BADPTR
 L.4:
 	addu $t1 $t0 4
 	li $t0 2
 	sw $t0 0($t1)
-	lw $a0 record.bar+0
+	lw $t0 record.b+0
+	sw $t0 record.a+0
+	lw $a0 record.b+0
 #	move $a0 $a0
-	jal record.foo
+	jal record.print
+	lw $a0 record.a+0
+#	move $a0 $a0
+	jal record.print
 #	returnSink
 	addu $sp record_M3.framesize
 	lw $ra -4($sp)

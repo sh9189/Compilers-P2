@@ -306,6 +306,8 @@ abstract class Type {
             return false;
         if (OpenArray.Is(t) != null)
             return true;
+       /* if (Record.Is(t)!=null)
+        	return true;*/
         return false;
     }
 
@@ -705,17 +707,24 @@ abstract class Type {
                     parent = null;
                 }
             }
-            for (Value o : Scope.ToList(fields)) {
-                Value.Field field = Value.Field.Is(o);
-                field.offset = fieldOffset + fieldSize++;
-             }
-            recursionDepth++;
+            //recursionDepth++;
             {
                 checked = true;
                 Scope.TypeCheck(fields);
                 
             }
-            recursionDepth--;
+            //recursionDepth--;
+            for (Value o : Scope.ToList(fields)) {
+                Value.Field field = Value.Field.Is(o);
+                if(Record.Is(field.type)!=null)
+                {
+                	field.offset = fieldOffset + fieldSize;
+                	fieldSize = fieldSize + Record.Is(field.type).fieldSize;
+                }
+                else
+                	field.offset = fieldOffset + fieldSize++;
+             }
+            
         }
 
         @Override

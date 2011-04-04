@@ -448,7 +448,13 @@ class Translate {
                 } else if (v.toplevel) {
                     // global
                     Temp.Label l = Temp.getLabel(Value.GlobalName(v));
-                    frags.add(new Frag.Data(target.record(l, 1)));
+                    if(Type.Record.Is(v.type)!=null)
+                    {
+                        frags.add(new Frag.Data(target.record(l,Type.Record.Is(v.type).fieldSize)));
+                    }
+                    else
+                    	frags.add(new Frag.Data(target.record(l, 1)));
+                    
                     if (v.decl.expr == null) v.initDone = true;
                 } else {
                     Temp t = null;
@@ -757,6 +763,55 @@ class Translate {
                 Tree.Exp lhs = Compile(s.lhs).unEx();
                 Tree.Exp rhs = Compile(s.rhs).unEx();
                 assert s.lhs.checked;
+             // changed Shahul
+                if(Type.Record.Is(s.lhs.type)!=null && Type.Record.Is(s.rhs.type)!=null )
+                {
+                	Type.Record record=Type.Record.Is(s.lhs.type);
+                	Type.Record rhsrecord=Type.Record.Is(s.rhs.type);
+        		    Tree.Stm stm = null;
+                    Tree.Exp.MEM mem;
+
+                    Temp a = new Temp();
+                    mem = (Tree.Exp.MEM)lhs;
+                    stm = SEQ(stm, MOVE(TEMP(a), ADD(mem.exp, mem.offset)));
+
+                    Temp b = new Temp();
+                    mem = (Tree.Exp.MEM)rhs;
+                    stm = SEQ(stm, MOVE(TEMP(b), ADD(mem.exp, mem.offset)));
+
+                    Temp i = new Temp();
+                    stm = SEQ(stm, MOVE(TEMP(i), CONST(record.fieldSize*target.wordSize())));
+
+                    Temp j = new Temp();
+                    stm = SEQ(stm, MOVE(TEMP(j), CONST(rhsrecord.fieldSize*target.wordSize())));
+
+                   Temp.Label badSub = target.badSub();
+                    if (badSub != null) {
+                        Temp.Label okPtr = new Label();
+                        stm = SEQ(stm, BNE(TEMP(i), TEMP(j), badSub, okPtr), LABEL(okPtr));
+                    }
+                    /*for (Value v : Scope.ToList(record.fields)) {
+                        Value.Field f = Value.Field.Is(v);
+                        stm = SEQ(stm, MOVE(TEMP(i), CONST(f.offset * target.wordSize())));
+                        stm = SEQ(stm, MOVE(MEM(ADD(TEMP(a), TEMP(i))), MEM(ADD(TEMP(b), TEMP(i)))));
+                    }*/
+                    
+                    
+                    Temp.Label top = new Label();
+                    Temp.Label copy = new Label();
+                    Temp.Label done = new Label();
+                    //stm = SEQ(stm, MOVE(TEMP(i), MUL(TEMP(i), CONST(target.wordSize()))));
+                    stm = SEQ(stm, LABEL(top));
+                    stm = SEQ(stm, MOVE(TEMP(i), SUB(TEMP(i), CONST(target.wordSize()))));
+                    stm = SEQ(stm, BLT(TEMP(i), CONST(0), done, copy));
+                    stm = SEQ(stm, LABEL(copy));
+                    stm = SEQ(stm, MOVE(MEM(ADD(TEMP(a), TEMP(i))), MEM(ADD(TEMP(b), TEMP(i)))));
+                    stm = SEQ(stm, JUMP(top));
+                    stm = SEQ(stm, LABEL(done));
+                    return new Exp.Nx(stm);
+             
+                }
+                
                 if (Type.IsStructured(s.lhs.type)) {
 		    Tree.Stm stm = null;
                     Tree.Exp.MEM mem;
